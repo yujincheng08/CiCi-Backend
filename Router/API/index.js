@@ -1,10 +1,14 @@
 import {Router as ExpressRouter} from 'express';
 import Users from 'Router/API/Users';
+import Session from 'Router/API/Session';
+import Word from 'Router/API/Word';
 
 class API extends ExpressRouter {
   constructor() {
     super();
-    this.use(Users);
+    this.use('/user', Users);
+    this.use('/session', Session);
+    this.use('/word', Word);
     this.use(API.handleValidationError);
   }
 

@@ -28,8 +28,11 @@ class App extends Express {
 
     this.use(Router);
 
-    mongoose.connect(App.MONGODB);
-    this.listen(this.PORT, this.listening);
+    mongoose.connect(App.MONGODB).then(() => {
+      this.listen(this.PORT, this.listening);
+    }).catch(e => {
+      console.error(e);
+    });
   }
 
   listening = () => {

@@ -9,9 +9,7 @@ class Router extends ExpressRouter {
   constructor() {
     super();
     this.use('/api', API);
-    this.use(history({
-      verbose: true
-    }));
+    this.use(history());
     this.use(ExpressStatic(this.root));
 
     this.get('/', Router.root);
