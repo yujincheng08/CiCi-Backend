@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{@types/express, @types/express-jwt, @types/mongoose, @types/passport, @types/passport-local}" />
-    <includedPredefinedLibrary name="Node.js Core" />
+    <file url="PROJECT" libraries="{@types/express, @types/passport, @types/passport-local}" />
   </component>
 </project>

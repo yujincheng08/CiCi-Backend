@@ -2,6 +2,8 @@ import {Router as ExpressRouter} from 'express';
 import Users from 'Router/API/Users';
 import Session from 'Router/API/Session';
 import Word from 'Router/API/Word';
+import Learning from 'Router/API/Learning';
+import Examine from 'Router/API/Examine';
 
 class API extends ExpressRouter {
   constructor() {
@@ -9,6 +11,8 @@ class API extends ExpressRouter {
     this.use('/user', Users);
     this.use('/session', Session);
     this.use('/word', Word);
+    this.use('/learning', Learning);
+    this.use('/examine', Examine);
     this.use(API.handleValidationError);
   }
 
