@@ -6,7 +6,7 @@ class Users extends ExpressRouter {
   constructor() {
     super();
     this.get('/', Auth.required, Users.getUser);
-    this.put('/', Users.register);
+    this.post('/', Users.register);
   }
 
   static getUser(req, res, next) {

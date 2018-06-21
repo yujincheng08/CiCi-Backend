@@ -18,8 +18,10 @@ class Learning extends ExpressRouter {
     let user = req.user.id;
     let word = req.params.word;
     LearningModel.findOne({user, word})
-      .then(({state}) => {
-        if (!state) state = LEARNING_STATES.NO_LEARN;
+      .then(learning => {
+        let state = null;
+        if (!learning || !learning.state) state = LEARNING_STATES.NO_LEARN;
+        else state = learning.state;
         return res.json({word, state});
       }).catch(next);
   }
