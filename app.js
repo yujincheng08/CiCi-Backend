@@ -1,4 +1,4 @@
-import {secret} from 'Config';
+import {secret, mongodb} from 'Config';
 import Router from 'Router';
 import Express from 'express';
 import session from 'express-session';
@@ -10,8 +10,6 @@ import mongoose from 'mongoose';
 class App extends Express {
   PORT = process.env.PORT || 3000;
 
-
-  static MONGODB = "mongodb://localhost/test";
 
   constructor() {
     super();
@@ -28,7 +26,7 @@ class App extends Express {
 
     this.use(Router);
 
-    mongoose.connect(App.MONGODB).then(() => {
+    mongoose.connect(mongodb).then(() => {
       this.listen(this.PORT, this.listening);
     }).catch(e => {
       console.error(e);

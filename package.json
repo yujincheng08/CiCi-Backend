@@ -5,8 +5,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "start": "babel-node app.js",
-    "dev": "webpack-dev-server --open --config webpack.dev.js --mode development",
-    "build": "webpack --config webpack.prod.js --mode production"
+    "import-wordbooks": "babel-node utils/ImportWordBooks.js"
   },
   "keywords": [],
   "author": "YU Jincheng",

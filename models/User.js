@@ -8,24 +8,26 @@ import crypto from 'crypto';
 class UserSchema extends Schema {
   static schema = {
     username: {
-      type: String,
+      type: Schema.Types.String,
       required: [true, "can't be blank"],
+      unique: true,
+      index: true,
     },
     email: {
-      type: String,
+      type: Schema.Types.String,
       lowercase: true,
       unique: true,
       required: [true, "can't be blank"],
       match: [/\S+@\S+\.\S+/, 'is invalid'],
       index: true,
     },
-    hash: String,
-    salt: String,
+    hash: Schema.Types.String,
+    salt: Schema.Types.String,
   };
 
   constructor() {
-    super(UserSchema.schema, {timestamp: true});
-    this.plugin(uniqueValidator, {message: 'is already taken.'});
+    super(UserSchema.schema, {timestamps: true});
+    this.plugin(uniqueValidator, {message: 'is already token.'});
     this.methods.validPassword = this.validPassword;
     this.methods.setPassword = this.setPassword;
     this.methods.generateJWT = this.generateJWT;

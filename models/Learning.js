@@ -10,13 +10,13 @@ export const LEARNING_STATES = {
 class LearningSchema extends Schema {
 
   static schema = {
-    word: String,
-    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    state: {type: Number, default: LEARNING_STATES.NO_LEARN}
+    word: Schema.Types.String,
+    user: {type: Schema.Types.ObjectId, ref: 'User'},
+    state: {type: Schema.Types.Number, default: LEARNING_STATES.NO_LEARN}
   };
 
   constructor() {
-    super(LearningSchema.schema, {timestamp: true});
+    super(LearningSchema.schema, {timestamps: true});
   }
 }
 
