@@ -37,7 +37,9 @@ class Learning extends ExpressRouter {
       .then(count => {
         if (count > 0)
           return res.status(409).json({
-            errors: "You have already learnt this word",
+            errors: {
+              [word]: "You have already learnt this word"
+            }
           });
         let learning = new LearningModel();
         let state = LEARNING_STATES.START_LEARNING;
@@ -72,7 +74,9 @@ class Learning extends ExpressRouter {
         if (learning && learning.state < LEARNING_STATES.FINISHED)
           learning.state = LEARNING_STATES.FINISHED;
         else return res.status(409).json({
-          errors: "You are not learning this word.",
+          errors: {
+            [word]: "You are not learning this word."
+          },
         });
         learning.save()
           .then(() => res.json({word, state: learning.state}))

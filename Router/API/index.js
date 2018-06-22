@@ -5,6 +5,7 @@ import Word from 'Router/API/Word';
 import Learning from 'Router/API/Learning';
 import Examine from 'Router/API/Examine';
 import WordBook from 'Router/API/WordBook';
+import Using from 'Router/API/Using';
 
 class API extends ExpressRouter {
   constructor() {
@@ -15,6 +16,7 @@ class API extends ExpressRouter {
     this.use('/learning', Learning);
     this.use('/examine', Examine);
     this.use('/wordbook', WordBook);
+    this.use('/using', Using);
     this.use(API.handleValidationError);
   }
 
