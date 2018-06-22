@@ -28,9 +28,7 @@ class App extends Express {
 
     mongoose.connect(mongodb).then(() => {
       this.listen(this.PORT, this.listening);
-    }).catch(e => {
-      console.error(e);
-    });
+    }).catch(console.error);
   }
 
   listening = () => {
