@@ -8,21 +8,21 @@ import crypto from 'crypto';
 class UserSchema extends Schema {
   static schema = {
     username: {
-      type: Schema.Types.String,
+      type: String,
       required: [true, "can't be blank"],
       unique: true,
       index: true,
     },
     email: {
-      type: Schema.Types.String,
+      type: String,
       lowercase: true,
       unique: true,
       required: [true, "can't be blank"],
       match: [/\S+@\S+\.\S+/, 'is invalid'],
       index: true,
     },
-    hash: Schema.Types.String,
-    salt: Schema.Types.String,
+    hash: {type: String},
+    salt: {type: String},
   };
 
   constructor() {

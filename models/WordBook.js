@@ -4,13 +4,13 @@ import uniqueValidator from 'mongoose-unique-validator';
 class WordBookSchema extends Schema {
   static schema = {
     name: {
-      type: Schema.Types.String,
+      type: String,
       require: [true, "can't be blank"],
       match: [/\S+/, 'is invalid'],
       unique: true,
       index: true,
     },
-    words: {type: Schema.Types.Array}
+    words: {type: Array}
   };
 
   constructor() {

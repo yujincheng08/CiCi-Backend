@@ -4,6 +4,7 @@ import Session from 'Router/API/Session';
 import Word from 'Router/API/Word';
 import Learning from 'Router/API/Learning';
 import Examine from 'Router/API/Examine';
+import WordBook from 'Router/API/WordBook';
 
 class API extends ExpressRouter {
   constructor() {
@@ -13,6 +14,7 @@ class API extends ExpressRouter {
     this.use('/word', Word);
     this.use('/learning', Learning);
     this.use('/examine', Examine);
+    this.use('/wordbook', WordBook);
     this.use(API.handleValidationError);
   }
 

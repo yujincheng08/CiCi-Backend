@@ -17,3 +17,5 @@ class WordBook extends ExpressRouter {
       .catch(next);
   }
 }
+
+export default new WordBook();

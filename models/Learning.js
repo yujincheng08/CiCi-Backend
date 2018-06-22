@@ -10,9 +10,9 @@ export const LEARNING_STATES = {
 class LearningSchema extends Schema {
 
   static schema = {
-    word: Schema.Types.String,
+    word: {type: String},
     user: {type: Schema.Types.ObjectId, ref: 'User'},
-    state: {type: Schema.Types.Number, default: LEARNING_STATES.NO_LEARN}
+    state: {type: Number, default: LEARNING_STATES.NO_LEARN}
   };
 
   constructor() {
