@@ -3,15 +3,19 @@ import Auth from "Config/Auth";
 import WordBookModel from 'models/WordBook';
 
 class WordBook extends ExpressRouter {
+  static PAGE_SIZE = 50;
   constructor() {
     super();
     this.get('/', Auth.optional, WordBook.getAllWordBook);
-    this.get('/:wordbook', Auth.optional, WordBook.getWordBook);
+    this.get('/:wordbook/:page', Auth.optional, WordBook.getWordBook);
   }
 
   static getWordBook(req, res, next) {
-    let {wordbook: name} = req.params;
-    WordBookModel.findOne({name})
+    let {wordbook: name, page} = req.params;
+    WordBookModel.findOne({name}, {
+      words: {
+        '$slice': [ (page-1) * WordBook.PAGE_SIZE, WordBook.PAGE_SIZE ]
+      }})
       .then((book) => {
         if(!book)
           return res.status(404).json({

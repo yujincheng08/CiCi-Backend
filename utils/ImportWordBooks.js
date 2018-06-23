@@ -7,13 +7,14 @@ mongoose.connect(mongodb).then(() => {
   let promises = [];
   for (let wordbook of wordbooks) {
     let book = new WordBook();
+    let uniqueWords = wordbook.words.filter( (value, index, self) => self.indexOf(value) === index );
     book.name = wordbook.name;
-    book.words = wordbook.words;
-    book.length = wordbook.words.length;
+    book.words = uniqueWords;
+    book.length = uniqueWords.length;
 
     console.log(`Importing ${wordbook.name}`);
     promises.push(book.save().then(() => {
-      console.log(`Successfully import ${wordbook.name} with ${wordbook.words.length} words`);
+      console.log(`Successfully import ${wordbook.name} with ${uniqueWords.length} words`);
     }).catch(console.error));
   }
   Promise.all(promises)
