@@ -1,6 +1,6 @@
 import Auth from 'Config/Auth';
 import {Router as ExpressRouter} from 'express';
-import LearningModel, {LEARNING_STATES} from 'models/Learning';
+import LearningModel from 'models/Learning';
 import mongoose from "mongoose";
 
 class Examine extends ExpressRouter {

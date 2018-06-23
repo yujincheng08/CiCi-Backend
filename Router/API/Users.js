@@ -12,7 +12,11 @@ class Users extends ExpressRouter {
   static getUser(req, res, next) {
     User.findById(req.user.id).then((user) => {
       if (!user)
-        return res.sendStatus(401);
+        return res.status(401).json({
+          errors: {
+            user: 'Unauthorized',
+          }
+        });
       return res.json({user: user.toAuthJSON()});
     }).catch(next);
   }

@@ -26,9 +26,8 @@ class Router extends ExpressRouter {
   static errorHandler(err, req, res, next) {
     res.status(err.status || 500);
     res.json({
-      'errors': {
+      errors: {
         message: err.message,
-        error: {}
       }
     });
     next();

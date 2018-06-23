@@ -10,7 +10,8 @@ class WordBookSchema extends Schema {
       unique: true,
       index: true,
     },
-    words: {type: Array}
+    words: {type: Array},
+    length: {type: Number},
   };
 
   constructor() {

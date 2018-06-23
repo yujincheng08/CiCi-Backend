@@ -88,7 +88,7 @@ class Learning extends ExpressRouter {
     let user = req.user.id;
     let word = req.params.word;
     LearningModel.deleteOne({user, word})
-      .then(() => res.status(204).send())
+      .then(() => res.sendStatus(204))
       .catch(next);
   }
 

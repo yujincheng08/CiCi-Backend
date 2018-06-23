@@ -9,6 +9,7 @@ mongoose.connect(mongodb).then(() => {
     let book = new WordBook();
     book.name = wordbook.name;
     book.words = wordbook.words;
+    book.length = wordbook.words.length;
 
     console.log(`Importing ${wordbook.name}`);
     promises.push(book.save().then(() => {

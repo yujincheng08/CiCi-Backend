@@ -1,7 +1,7 @@
 import Auth from 'Config/Auth';
 import Passport from 'Config/Passport';
 import {Router as ExpressRouter} from 'express';
-import User from "../../models/User";
+import User from "models/User";
 
 class Session extends ExpressRouter {
 
@@ -14,7 +14,7 @@ class Session extends ExpressRouter {
 
   static login(req, res, next) {
     if(!req.body.user) {
-      return res.stat(433).json({
+      return res.status(433).json({
         errors: {
           user : "cannot be blank",
         }
@@ -54,7 +54,9 @@ class Session extends ExpressRouter {
   static currentUser(req, res, next) {
     User.findById(req.user.id).then((user) => {
       if (!user)
-        return res.sendStatus(401);
+        return res.status(401).json({
+          errors: {user: 'unauthorized'}
+        });
       return res.json({user: user.toAuthJSON()});
     }).catch(next);
   }

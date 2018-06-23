@@ -23,7 +23,7 @@ class API extends ExpressRouter {
   static handleValidationError(err, req, res, next) {
     if (err.name === 'ValidationError') {
       return res.status(422).json({
-        error: Object.keys(err.errors).reduce((errors, key) => {
+        errors: Object.keys(err.errors).reduce((errors, key) => {
           errors[key] = err.errors[key].message;
           return errors;
         }, {}),

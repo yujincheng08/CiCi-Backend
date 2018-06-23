@@ -12,16 +12,25 @@ class WordBook extends ExpressRouter {
   static getWordBook(req, res, next) {
     let {wordbook: name} = req.params;
     WordBookModel.findOne({name})
-      .then(({words}) => {
-        res.json(words);
+      .then((book) => {
+        if(!book)
+          return res.status(404).json({
+            errors:{
+              wordbook: 'Not found',
+            }
+          });
+        res.json(book.words);
       })
       .catch(next);
   }
 
   static getAllWordBook(req, res, next) {
-    WordBookModel.find({}, {name: true})
+    WordBookModel.find({}, {_id: false, name: true, length: true})
       .then(books => {
-        res.json(books.map(book=>book.name));
+        res.json(books.reduce((books, book)=>{
+          books[book.name]= {length: book.length};
+          return books
+        }, {}));
     }).catch(next);
   }
 }
