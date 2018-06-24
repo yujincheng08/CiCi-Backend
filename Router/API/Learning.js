@@ -1,17 +1,22 @@
 import Auth from 'Config/Auth';
 import {Router as ExpressRouter} from 'express';
-import LearningModel, {LEARNING_STATES} from 'models/Learning';
+import LearningModel from 'models/Learning';
+import TaskModel from 'models/Task';
+import WordBookModel from 'models/WordBook';
+import UsingModel from 'models/Using';
+import {getDay, LEARNING_DAYS, LEARNING_STATES, TASK_NEW_WORD} from "Config";
 
 class Learning extends ExpressRouter {
 
   constructor() {
     super();
     this.get('/', Auth.required, Learning.getTodayLearning);
-    this.post('/:word', Auth.optional, Learning.newLearning);
+    this.post('/:word', Auth.required, Learning.newLearning);
     this.get('/:word', Auth.required, Learning.getLearning);
     this.patch('/:word', Auth.required, Learning.updateLearning);
     this.put('/:word', Auth.required, Learning.finishLearning);
     this.delete('/:word', Auth.required, Learning.resetLearning);
+    //this.post('/', Auth.required, Learning.getWords);
   }
 
   static getLearning(req, res, next) {
@@ -27,7 +32,21 @@ class Learning extends ExpressRouter {
   }
 
   static getTodayLearning(req, res, next) {
-    // TODO
+    let user = req.user.id;
+    TaskModel.findOne({user})
+      .then(task => {
+        if (task === null)
+          task = new TaskModel({user});
+        else if (task.date.getTime() === getDay())
+          return res.json(task.words);
+
+        return Learning.getWords(user)
+          .then(words => {
+            task['words'] = words;
+            task['date'] = getDay();
+            return task.save().then(() => res.json(task.words));
+          });
+      }).catch(next);
   }
 
   static newLearning(req, res, next) {
@@ -37,18 +56,14 @@ class Learning extends ExpressRouter {
       .then(count => {
         if (count > 0)
           return res.status(409).json({
-            errors: {
-              [word]: "You have already learnt this word"
-            }
+            errors: {[word]: "You have already learnt this word"}
           });
         let learning = new LearningModel();
-        let state = LEARNING_STATES.START_LEARNING;
         learning.word = word;
         learning.user = user;
-        learning.state = state;
-        learning.save()
-          .then(() => res.json({word, state}))
-          .catch(next);
+        learning.learnDay = getDay();
+        return learning.save()
+          .then(() => res.json({word, state: LEARNING_STATES.START_LEARNING}));
       }).catch(next);
   }
 
@@ -57,12 +72,20 @@ class Learning extends ExpressRouter {
     let word = req.params.word;
     LearningModel.findOne({user, word})
       .then(learning => {
-        if (learning.state < LEARNING_STATES.FINISHED) {
+        if (learning.state < LEARNING_STATES.FINISHED)
           learning.state += 1;
-        }
-        learning.save()
-          .then(() => res.json({word, state: learning.state}))
-          .catch(next);
+        learning['learnDay'] = getDay();
+        let promises = [];
+        promises.push(learning.save());
+        promises.push(TaskModel.findOne({user})
+          .then(task => {
+            if (task && task.words[word] === false) {
+              task.words[word] = true;
+              task.markModified('words');
+              return task.save();
+            }
+          }));
+        return Promise.all(promises).then(() => res.json({word, state: learning.state}));
       }).catch(next);
   }
 
@@ -78,9 +101,18 @@ class Learning extends ExpressRouter {
             [word]: "You are not learning this word."
           },
         });
-        learning.save()
-          .then(() => res.json({word, state: learning.state}))
-          .catch(next);
+        learning['learnDay'] = getDay();
+        let promises = [];
+        promises.push(learning.save());
+        promises.push(TaskModel.findOne({user})
+          .then(task => {
+            if (task && task.words[word] === false) {
+              task.words[word] = true;
+              task.markModified('words');
+              return task.save();
+            }
+          }));
+        return Promise.all(promises).then(() => res.json({word, state: learning.state}));
       }).catch(next);
   }
 
@@ -92,6 +124,52 @@ class Learning extends ExpressRouter {
       .catch(next);
   }
 
+  static getWords(user) {
+    let words = [];
+    let promises = [];
+    // Get word that use is learning
+    // Get specific number of words from a random word book user is using
+    // expect for those is learning
+    // for each state, get specific number of words
+    const {START_LEARNING, FINISHED} = LEARNING_STATES;
+    promises.push(
+      LearningModel.count({user, state: START_LEARNING, learnDay: {$lt: getDay()}})
+        .then(count => {
+          if (count > 0) return;
+          return LearningModel.find({user})
+            .then(learnings => {
+              let learningWords = learnings.map(({word}) => word);
+              return UsingModel.find({user}, {_id: false, wordbook: true})
+                .then(usings => {
+                  let wordbooks = usings.map(using => using.wordbook);
+                  return WordBookModel.aggregate([
+                    {$match: {_id: {$in: wordbooks}}},
+                    {$unwind: '$words'},
+                    {$match: {words: {$nin: learningWords}}},
+                    {$sample: {size: TASK_NEW_WORD}}
+                  ]).then(newWords => {
+                    newWords = newWords.map(({words}) => words);
+                    for (let word of newWords)
+                      promises.push(new LearningModel({word, user, learnDay: getDay()}).save());
+                    words.push(...newWords);
+                  });
+                });
+            })
+        }));
+    for (let state = START_LEARNING; state < FINISHED; ++state) {
+      promises.push(LearningModel.find({user, state, learnDay: {$lte: getDay(LEARNING_DAYS[state])}},
+        {_id: false, word: true})
+        .limit(LEARNING_DAYS[state])
+        .then(stateWords => words.push(...stateWords.map(({word}) => word)))
+      )
+    }
+    return Promise.all(promises).then(() =>
+      words.filter((value, index, self) => self.indexOf(value) === index)
+        .reduce((total, word) => {
+          total[word] = false;
+          return total
+        }, {}));
+  }
 }
 
 export default new Learning();

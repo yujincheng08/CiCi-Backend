@@ -7,6 +7,8 @@ class Users extends ExpressRouter {
     super();
     this.get('/', Auth.required, Users.getUser);
     this.post('/', Users.register);
+    this.patch('/profile',Auth.required, Users.modify);
+    this.get('/profile',Auth.required, Users.profile);
   }
 
   static getUser(req, res, next) {
@@ -31,6 +33,14 @@ class Users extends ExpressRouter {
     user.save().then(() => {
       return res.json({user: user.toAuthJSON()});
     }).catch(next);
+  }
+
+  static modify() {
+    //TODO:
+  }
+
+  static profile() {
+    //TODO:
   }
 }
 

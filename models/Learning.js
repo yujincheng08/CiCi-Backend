@@ -1,18 +1,14 @@
 import mongoose, {Schema} from 'mongoose';
+import {LEARNING_STATES} from "Config";
 
-export const LEARNING_STATES = {
-  NO_LEARN: 0,
-  START_LEARNING: 1,
-  // LEARNING is floating pointer number between START and FINISH.
-  FINISHED: 6,
-};
 
 class LearningSchema extends Schema {
 
   static schema = {
     word: {type: String},
     user: {type: Schema.Types.ObjectId, ref: 'User'},
-    state: {type: Number, default: LEARNING_STATES.NO_LEARN}
+    state: {type: Number, default: LEARNING_STATES.START_LEARNING},
+    learnDay: {type: Schema.Types.Date}
   };
 
   constructor() {
