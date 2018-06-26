@@ -12,7 +12,7 @@ class Users extends ExpressRouter {
   }
 
   static getUser(req, res, next) {
-    User.findById(req.user.id).then((user) => {
+    User.findById(req.user.id).then(user => {
       if (!user)
         return res.status(401).json({
           errors: {
@@ -35,12 +35,38 @@ class Users extends ExpressRouter {
     }).catch(next);
   }
 
-  static modify() {
-    //TODO:
+  static modify(req, res, next) {
+    let user = req.user.id;
+    User.findById(user)
+      .then(user => {
+        if(!user)
+          return res.status(401).json({
+            errors: {user: 'Unauthorized'}
+          });
+        let {username, email, password} = req.body.user;
+        user['username'] = username || user.username;
+        user['email'] = email || user.email;
+        if(password) user.setPassword(password);
+        return user.save(() => res.json({
+          username: user.username,
+          email: user.email,
+        }));
+      }).catch(next);
   }
 
-  static profile() {
-    //TODO:
+  static profile(req, res, next) {
+    let user = req.user.id;
+    User.findById(user)
+      .then(user => {
+        if(!user)
+          return res.status(401).json({
+            errors: {user: 'Unauthorized'}
+          });
+        return res.json({
+          username: user.username,
+          email: user.email,
+        });
+      }).catch(next);
   }
 }
 
