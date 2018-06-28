@@ -39,3 +39,6 @@ export const TASK_NUM = 150;
 // How many new words to learn a day.
 export const TASK_NEW_WORD = Math.floor(TASK_NUM/CYCLE_DAYS);
 // TODO: make it a configuration for each user.
+
+export const frontend = process.env.FRONTEND || '../../frontend/dist';
+export const port = process.env.PORT || 3000;

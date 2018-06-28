@@ -6,10 +6,9 @@ import cors from 'cors';
 import methodOverride from 'method-override';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import {port} from 'Config';
 
 class App extends Express {
-  PORT = process.env.PORT || 3000;
-
 
   constructor() {
     super();
@@ -27,12 +26,12 @@ class App extends Express {
     this.use(Router);
 
     mongoose.connect(mongodb).then(() => {
-      this.listen(this.PORT, this.listening);
+      this.listen(port, this.listening);
     }).catch(console.error);
   }
 
   listening = () => {
-    console.log(`listening on ${this.PORT}`)
+    console.log(`listening on ${port}`)
   };
 
 }

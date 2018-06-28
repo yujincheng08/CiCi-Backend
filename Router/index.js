@@ -2,9 +2,10 @@ import {Router as ExpressRouter, static as ExpressStatic} from 'express';
 import API from 'Router/API';
 import history from 'connect-history-api-fallback';
 import path from 'path';
+import {frontend} from 'Config';
 
 class Router extends ExpressRouter {
-  root = path.join(__dirname, '../dist');
+  root = path.join(__dirname, frontend);
 
   constructor() {
     super();
