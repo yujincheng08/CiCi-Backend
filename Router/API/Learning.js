@@ -42,6 +42,8 @@ class Learning extends ExpressRouter {
 
         return Learning.getWords(user)
           .then(words => {
+            if (Object.keys(words).length === 0)
+              return res.json({});
             task['words'] = words;
             task['date'] = getDay();
             return task.save().then(() => res.json(task.words));
@@ -62,9 +64,17 @@ class Learning extends ExpressRouter {
         learning.word = word;
         learning.user = user;
         learning.learnDay = getDay();
-        return learning.save()
-          .then(() => res.json({word, state: LEARNING_STATES.START_LEARNING}));
-      }).catch(next);
+        return learning.save();
+      }).then(() => TaskModel.findOne({user})
+      .then(task => {
+        if (task && !task.words[word]) {
+          task.words[word] = false;
+          task.markModified('words');
+          return task.save();
+        }
+      }))
+      .then(() => res.json({word, state: LEARNING_STATES.START_LEARNING}))
+      .catch(next);
   }
 
   static updateLearning(req, res, next) {
@@ -120,7 +130,14 @@ class Learning extends ExpressRouter {
     let user = req.user.id;
     let word = req.params.word;
     LearningModel.deleteOne({user, word})
-      .then(() => res.sendStatus(204))
+      .then(() => TaskModel.findOne({user}))
+      .then(task=> {
+        if(task && task.words[word] !== undefined) {
+          delete task.words[word];
+          task.markModified('words');
+          return task.save();
+        }
+      }).then(() => res.sendStatus(204))
       .catch(next);
   }
 
@@ -148,6 +165,7 @@ class Learning extends ExpressRouter {
                     {$match: {words: {$nin: learningWords}}},
                     {$sample: {size: TASK_NEW_WORD}}
                   ]).then(newWords => {
+                    newWords= newWords.filter( (value, index, self) => self.indexOf(value) === index );
                     newWords = newWords.map(({words}) => words);
                     for (let word of newWords)
                       promises.push(new LearningModel({word, user, learnDay: getDay()}).save());
