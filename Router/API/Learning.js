@@ -159,7 +159,7 @@ class Learning extends ExpressRouter {
     for (let state = START_LEARNING; state < FINISHED; ++state) {
       promises.push(LearningModel.find({user, state, learnDay: {$lte: getDay(LEARNING_DAYS[state])}},
         {_id: false, word: true})
-        .limit(LEARNING_DAYS[state])
+        .limit(TASK_NEW_WORD)
         .then(stateWords => words.push(...stateWords.map(({word}) => word)))
       )
     }

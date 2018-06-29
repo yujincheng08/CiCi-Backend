@@ -7,7 +7,7 @@ export let mongodb = "mongodb://localhost/test";
 // Get timestamp of one day. You can set your own time zone
 export function getDay(offset = 0) {
   let d = new Date();
-  d.setHours(0,0,0,0);
+  d.setHours(0, 0, 0, 0);
   return d.setDate(d.getDate() - offset);
 }
 
@@ -30,14 +30,11 @@ export const LEARNING_DAYS = {
   6: 15,
 };
 
-// Cycle days to finish learning a word
-export const CYCLE_DAYS = Object.values(LEARNING_DAYS).reduce((sum, v) => sum + v, 0);
-
 // How many words to learn a day
-export const TASK_NUM = 150;
+export const TASK_NUM = 120;
 
 // How many new words to learn a day.
-export const TASK_NEW_WORD = Math.floor(TASK_NUM/CYCLE_DAYS);
+export const TASK_NEW_WORD = Math.round(TASK_NUM / (LEARNING_STATES.FINISHED - 1));
 // TODO: make it a configuration for each user.
 
 export const frontend = process.env.FRONTEND || '../../frontend/dist';
